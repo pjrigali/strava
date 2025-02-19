@@ -1,13 +1,16 @@
 import json
 import requests
 from dataclasses import dataclass
-from universal import CLIENT_ID, CLIENT_SECRET, REFRESH, BASE_URL, ACTIVITY_UPDATES
+
+# Some globals for ya.
+BASE_URL = "https://www.strava.com/"
+ACTIVITY_UPDATES = {'commute': bool, 'trainer': bool, 'hide_from_home': bool, 'description': str, 'name': str, 'type': str, 'sport_type': str, 'gear_id': str}
 
 
-def _get_header() -> dict:
-    payload = {'client_id': CLIENT_ID,
-               'client_secret': CLIENT_SECRET,
-               'refresh_token': REFRESH,
+def _get_header(client_id: str, client_secret: str, refresh_token: str) -> dict:
+    payload = {'client_id': client_id,
+               'client_secret': client_secret,
+               'refresh_token': refresh_token,
                'grant_type': "refresh_token",
                'f': 'json'}
     r = requests.post(f"{BASE_URL}oauth/token", data=payload, verify=False)
@@ -21,9 +24,9 @@ def _get_header() -> dict:
 @dataclass
 class Strava:
     
-    def __init__(self, athlete_id: int) -> None:
+    def __init__(self, athlete_id: int, client_id: str, client_secret: str, refresh_token: str) -> None:
         self.athlete_id = athlete_id
-        self.headers = _get_header()
+        self.headers = _get_header(client_id=client_id, client_secret=client_secret, refresh_token=refresh_token)
 
 
     def get_athlete(self) -> dict:
